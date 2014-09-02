@@ -1,0 +1,21 @@
+version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  error_file:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: simple
+    filename: errors.log
+    maxBytes: 104857600
+    backupCount: 100
+root:
+  level: DEBUG
+  handlers: [console, error_file]
+
