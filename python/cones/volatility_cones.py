@@ -1,4 +1,4 @@
-from numpy import sqrt
+from numpy import log, sqrt
 import numpy as np
 import pandas as pd
 from pylab import legend, plot, show
@@ -12,7 +12,7 @@ def main():
     imp_vol.sort_index(inplace=True)
 
     prices['Adj Returns'] = \
-        calculate_returns(prices['Adj Close'].values)
+        calculate_log_returns(prices['Adj Close'].values)
     close_data = prices['Adj Returns'][-300:].values
     imp_vol_data = imp_vol['30d iv mean'][-300:].values
 
@@ -76,9 +76,9 @@ def calc_sigma(N, X):
     return sqrt(sum((X - X.mean())**2) / float(N)) * sqrt(252.0)
 
 
-def calculate_returns(pnl):
+def calculate_log_returns(pnl):
     lagged_pnl = lag(pnl)
-    returns = (pnl - lagged_pnl) / lagged_pnl
+    returns = log(pnl / lagged_pnl)
 
     # All values prior to our position opening in pnl will have a
     # value of inf. This is due to division by 0.0
@@ -89,9 +89,9 @@ def calculate_returns(pnl):
 
 
 def lag(data):
-    lag = np.roll(data, 1)
-    lag[0] = 0.
-    return lag
+    lagged = np.roll(data, 1)
+    lagged[0] = 0.
+    return lagged
 
 
 if __name__ == '__main__':
