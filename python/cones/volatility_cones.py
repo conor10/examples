@@ -1,7 +1,7 @@
 from numpy import log, sqrt
 import numpy as np
 import pandas as pd
-from pylab import legend, plot, show
+from pylab import axhline, figure, legend, plot, show
 
 
 def main():
@@ -14,32 +14,59 @@ def main():
     prices['Adj Returns'] = \
         calculate_log_returns(prices['Adj Close'].values)
     close_data = prices['Adj Returns'][-300:].values
-    imp_vol_data = imp_vol['30d iv mean'][-300:].values
-
+    imp_vol_data_30d = imp_vol['30d iv mean'][-300:].values
+    imp_vol_data_360d = imp_vol['360d iv mean'][-300:].values
 
     days_to_expiry = [20, 60, 120, 180, 240]
 
-    mins = []
+    lower = []
     means = []
-    maxes = []
+    upper = []
 
     for expiry in days_to_expiry:
-        np_min, np_mean, np_max = calc_sigmas(expiry, close_data)
-        mins.append(np_min)
+        np_lower, np_mean, np_upper = calc_sigmas(expiry, close_data)
+        lower.append(np_lower)
         means.append(np_mean)
-        maxes.append(np_max)
+        upper.append(np_upper)
 
-    historical_sigma = calc_daily_sigma(20, close_data)
+    historical_sigma_20d = calc_daily_sigma(20, close_data)
+    historical_sigma_240d = calc_daily_sigma(240, close_data)
 
     limit = max(days_to_expiry)
     x = range(0, limit)
 
-    plot(days_to_expiry, mins,
-         days_to_expiry, means,
-         days_to_expiry, maxes)
-    plot(x, historical_sigma[-limit:], label='Historical')
-    plot(x, imp_vol_data[-limit:], label='Implied')
-    legend()
+    fig = figure()
+    ax1 = fig.add_subplot(3, 1, 1)
+    plot(days_to_expiry, lower, color='red', label='Lower')
+    plot(days_to_expiry, means, color='grey', label='Average')
+    plot(days_to_expiry, upper, color='blue', label='Upper')
+    axhline(lower[0], linestyle='dashed', color='red')
+    axhline(lower[-1], linestyle='dashed', color='red')
+    axhline(upper[0], linestyle='dashed', color='blue')
+    axhline(upper[-1], linestyle='dashed', color='blue')
+    ax1.set_title('Volatility Cones')
+    legend(bbox_to_anchor=(1., 1.), loc=2)
+
+    ax2 = fig.add_subplot(3, 1, 2)
+    plot(x, historical_sigma_20d[-limit:], label='Historical')
+    plot(x, imp_vol_data_30d[-limit:], label='Implied')
+    axhline(lower[0], linestyle='dashed', color='red')
+    axhline(upper[0], linestyle='dashed', color='blue')
+    ax2.set_title('20 Day Volatilities')
+    legend(bbox_to_anchor=(1., 1.), loc=2)
+
+    # We only want to plot implied vol. where we have a value for historical
+    imp_vol_data_360d[np.where(np.isnan(historical_sigma_240d))] = np.nan
+
+    ax3 = fig.add_subplot(3, 1, 3)
+    plot(x, historical_sigma_240d[-limit:], label='Historical')
+    plot(x, imp_vol_data_360d[-limit:], label='Implied')
+    axhline(lower[-1], linestyle='dashed', color='red')
+    axhline(upper[-1], linestyle='dashed', color='blue')
+    ax3.set_title('240 Day Volatilities')
+    # Ensure x-axis is not truncated in chart
+    ax3.set_xlim(left=x[0], right=x[-1])
+    legend(bbox_to_anchor=(1., 1.), loc=2)
     show()
 
 
@@ -57,7 +84,16 @@ def calc_sigmas(N, X, period=20):
         end += period
 
     sigmas = np.array(results)
-    return sigmas.min(), sigmas.mean(), sigmas.max()
+    mean = sigmas.mean()
+
+    # Uncomment the following three lines to use z scores instead of minimum
+    # and maximum sigma values
+    #
+    # z_score=2.0
+    # interval = sigmas.std() * z_score
+    # return mean - interval, mean, mean + interval
+    #
+    return sigmas.min(), mean, sigmas.max()
 
 
 def calc_daily_sigma(lookback, data):
@@ -73,7 +109,7 @@ def calc_daily_sigma(lookback, data):
 
 
 def calc_sigma(N, X):
-    return sqrt(sum((X - X.mean())**2) / float(N)) * sqrt(252.0)
+    return sqrt(sum((X)**2) / float(N)) * sqrt(252.0)
 
 
 def calculate_log_returns(pnl):
