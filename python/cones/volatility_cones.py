@@ -53,6 +53,8 @@ def main():
     axhline(lower[0], linestyle='dashed', color='red')
     axhline(upper[0], linestyle='dashed', color='blue')
     ax2.set_title('20 Day Volatilities')
+    ax2.set_xlim(ax1.get_xlim())
+    ax2.set_ylim(ax1.get_ylim())
     legend(bbox_to_anchor=(1., 1.), loc=2)
 
     # We only want to plot implied vol. where we have a value for historical
@@ -64,8 +66,8 @@ def main():
     axhline(lower[-1], linestyle='dashed', color='red')
     axhline(upper[-1], linestyle='dashed', color='blue')
     ax3.set_title('240 Day Volatilities')
-    # Ensure x-axis is not truncated in chart
-    ax3.set_xlim(left=x[0], right=x[-1])
+    ax3.set_xlim(ax1.get_xlim())
+    ax3.set_ylim(ax1.get_ylim())
     legend(bbox_to_anchor=(1., 1.), loc=2)
     show()
 
