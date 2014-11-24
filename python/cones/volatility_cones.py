@@ -111,7 +111,7 @@ def calc_daily_sigma(lookback, data):
 
 
 def calc_sigma(N, X):
-    return sqrt(sum((X)**2) / float(N)) * sqrt(252.0)
+    return sqrt(sum((X)**2) / float(N - 1)) * sqrt(252.0)
 
 
 def calculate_log_returns(pnl):
