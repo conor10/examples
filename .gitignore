@@ -1,2 +1,6 @@
 *.pyc
 *.log
+.DS_Store
+~$*.xlsx
+*.iml
+*.idea
