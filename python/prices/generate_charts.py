@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn
 
-import gbm
+import bm
 
 
 def main():
@@ -12,20 +12,20 @@ def main():
     start_price = 70.0
     mu = 0.05
     sigma = 0.3
-    days_per_period = 1.0
+    delta = 1.0
 
-    compare_bm_versus_gbm(periods, start_price, mu, sigma, days_per_period)
+    compare_bm_versus_gbm(periods, start_price, mu, sigma, delta)
     run_multiple_simulations(10000, periods, start_price, mu, sigma,
-                             days_per_period)
+                             delta)
 
 
-def compare_bm_versus_gbm(periods, start_price, mu, sigma, days_per_period):
+def compare_bm_versus_gbm(periods, start_price, mu, sigma, delta):
     np.random.seed(10)
-    gbm_prices = gbm.generate_gbm_prices(periods, start_price, mu, sigma,
-                                         days_per_period)
+    gbm_prices = bm.generate_gbm_prices(periods, start_price, mu, sigma,
+                                         delta)
     np.random.seed(10)
-    bm_prices = gbm.generate_bm_prices(periods, start_price, mu, sigma,
-                                       days_per_period)
+    bm_prices = bm.generate_bm_prices(periods, start_price, mu, sigma,
+                                       delta)
 
     plt.plot(gbm_prices, label='GBM')
     plt.plot(bm_prices, label='BM')
@@ -34,14 +34,14 @@ def compare_bm_versus_gbm(periods, start_price, mu, sigma, days_per_period):
 
 
 def run_multiple_simulations(simulation_count, periods, start_price, mu,
-                             sigma, days_per_period):
+                             sigma, delta):
     np.random.seed(10)
     annualised_days = 252.0
     sigmas = []
     mus = []
     for i in range(0, simulation_count):
-        prices = gbm.generate_gbm_prices(periods, start_price, mu, sigma,
-                                         days_per_period)
+        prices = bm.generate_gbm_prices(periods, start_price, mu, sigma,
+                                         delta)
         returns = calculate_log_returns(prices)
         mus.append((1.0+returns.mean())**annualised_days - 1.0)
         sigmas.append(returns.std() * math.sqrt(annualised_days))

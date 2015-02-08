@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from numpy.testing import utils as np_utils
 
-import gbm.gbm as gbm
+import prices.bm as bm
 
 
 class GBMTests(unittest.TestCase):
@@ -12,15 +12,15 @@ class GBMTests(unittest.TestCase):
 
         periods = 1000
         price = 70.0
-        mu = 0.0
+        mu = 0.05
         sigma = 0.3
         period_duration = 1.0
 
         np.random.seed(10)
-        iterative_ret = gbm.generate_gbm_prices(
+        iterative_ret = bm.generate_gbm_prices(
             periods, price, mu, sigma, period_duration)
         np.random.seed(10)
-        vectorised_ret = gbm.generate_gbm_prices_vec(
+        vectorised_ret = bm.generate_gbm_prices_vec(
             periods, price, mu, sigma, period_duration)
 
         # Equal to 6 decimal places
