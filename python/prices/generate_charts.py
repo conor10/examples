@@ -46,7 +46,6 @@ def run_multiple_simulations(simulation_count, periods, start_price, mu,
         mus.append((1.0+returns.mean())**annualised_days - 1.0)
         sigmas.append(returns.std() * math.sqrt(annualised_days))
 
-    plt.scatter(sigmas, mus)
     plt.subplot(211)
     plt.hist(mus)
     plt.subplot(212)
