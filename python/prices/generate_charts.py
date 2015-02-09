@@ -43,13 +43,17 @@ def run_multiple_simulations(simulation_count, periods, start_price, mu,
         prices = bm.generate_gbm_prices(periods, start_price, mu, sigma,
                                          delta)
         returns = calculate_log_returns(prices)
-        mus.append((1.0+returns.mean())**annualised_days - 1.0)
+        mus.append(returns.mean() * annualised_days)
         sigmas.append(returns.std() * math.sqrt(annualised_days))
 
     plt.subplot(211)
     plt.hist(mus)
+    plt.axvline(x=mu, alpha=0.5, label='mu')
+    plt.legend()
     plt.subplot(212)
     plt.hist(sigmas)
+    plt.axvline(x=sigma, alpha=0.5, label='sigma')
+    plt.legend()
     plt.show()
 
 
