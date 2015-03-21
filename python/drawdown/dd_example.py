@@ -5,19 +5,21 @@ import seaborn
 import utils
 
 
-np.random.seed(1)
+np.random.seed(3)
 
 
 def main():
 
     prices = utils.generate_gbm_prices(500, 70.0, 0.05, 0.3, 1.0)
-    returns = utils.calculate_log_returns(prices).cumsum()
+    returns = (utils.calculate_returns(prices) + 1.0).cumprod()
 
-    max_dd, max_count, max_dd_idx, max_duration_idx = \
-        utils.calculate_max_drawdown(returns)
+    max_dd, max_count, max_dd_idx, max_duration_idx, hwm_idx = \
+        utils.calculate_max_drawdown(returns - 1.0)
 
     plt.plot(returns)
 
+    plt.plot((hwm_idx, max_dd_idx),
+             (returns[hwm_idx], returns[max_dd_idx]), color='black')
     plt.annotate('max dd ({0:.2f}%)'.format(max_dd * 100.0),
                  xy=(max_dd_idx, returns[max_dd_idx]),
                  xycoords='data', xytext=(0, -50),

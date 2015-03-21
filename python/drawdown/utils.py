@@ -22,9 +22,9 @@ def lag(data, empty_term=0.):
     return lagged
 
 
-def calculate_log_returns(prices):
+def calculate_returns(prices):
     lagged_pnl = lag(prices)
-    returns = np.log(prices / lagged_pnl)
+    returns = (prices - lagged_pnl) / lagged_pnl
 
     # All values prior to our position opening in pnl will have a
     # value of inf. This is due to division by 0.0
@@ -47,5 +47,8 @@ def calculate_max_drawdown(returns):
             dd_duration[i] = 0
         else:
             dd_duration[i] = dd_duration[i-1] + 1
+
+    min_dd_idx = drawdown.argmin()
     return min(drawdown), max(dd_duration), \
-           drawdown.argmin(), dd_duration.argmax()
+           min_dd_idx, dd_duration.argmax(), \
+           np.where(returns == highwatermark[min_dd_idx-1])[-1]
