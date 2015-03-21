@@ -7,6 +7,7 @@ import utils
 
 np.random.seed(1)
 
+
 def main():
 
     prices = utils.generate_gbm_prices(500, 70.0, 0.05, 0.3, 1.0)
