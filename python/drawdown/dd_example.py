@@ -12,11 +12,11 @@ def main():
 
     start_price = 70.0
     prices = utils.generate_gbm_prices(500, 70.0, 0.05, 0.3, 1.0)
-    returns = (utils.calculate_returns(prices) + 1.0).cumprod()
-    pnl = start_price * returns
+    returns = (utils.calculate_returns(prices) + 1.0).cumprod() - 1.0
+    pnl = start_price * (returns + 1.0)
 
     max_dd, max_count, max_dd_idx, max_duration_idx, hwm_idx = \
-        utils.calculate_max_drawdown(returns - 1.0)
+        utils.calculate_max_drawdown(returns)
 
     plt.plot(pnl)
     plt.plot((hwm_idx, max_dd_idx),
